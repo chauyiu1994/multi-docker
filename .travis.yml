@@ -1,0 +1,28 @@
+# use traivis to build the docker image
+sudo: required
+services:
+  - docker
+
+# run test before build actual production image
+before_install:
+  - docker build -t chauyiu1994/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true chauyiu1994/react-test npm test
+
+after_success:
+  - docker build -t chauyiu1994/multi-client ./client
+  - docker build -t chauyiu1994/multi-nginx ./nginx
+  - docker build -t chauyiu1994/multi-server ./server
+  - docker build -t chauyiu1994/multi-worker ./worker
+
+  # Login in to the docker CLI (single line)
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push chauyiu1994/multi-client
+  - docker push chauyiu1994/multi-nginx
+  - docker push chauyiu1994/multi-server
+  - docker push chauyiu1994/multi-worker
+
+  
+
