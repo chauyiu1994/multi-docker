@@ -24,5 +24,26 @@ after_success:
   - docker push chauyiu1994/multi-server
   - docker push chauyiu1994/multi-worker
 
-  
+  # the Dockerrun.aws.json file is for instructing AWS ECS TO RUN DOCKER IMAGE
+
+deploy:
+  # edge: true
+  provider: elasticbeanstalk
+  # regions of aws registered
+  region: "us-east-2"
+  # name of elasticbeanstalk instance
+  app: "multi-docker"
+  # env of elasticbeanstalk instance
+  env: "MultiDocker-env"
+  # travis zip the contents can deploy to a S3 bucket (check at s3 service dashbash)
+  bucket_name: "elasticbeanstalk-us-east-2-873739410082"
+  bucket_path: "multi-docker"
+  # deploy only when master branch got modified
+  on:
+    branch: master
+
+  # iam dashboard -> users -> add users -> Attach existing policies directly -> use AWSElasticBeanstalkFullAccess policy
+  # adding the access key in the travis ci env variable dashboard
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
 
